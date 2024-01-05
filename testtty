@@ -1,0 +1,12 @@
+import boto3
+def lambda_handler(event, context):
+ec2 = boto3.client('ec2')
+# Describe all snapshots in the account
+snapshots = ec2.describe_snapshots(OwnerIds=['self'])['Snapshots']
+# Identify and delete unused snapshots
+for snapshot in snapshots:
+# Check if the 'Attachments' key exists in the snapshot dictionary
+if 'Attachments' not in snapshot or not snapshot['Attachments']:
+snapshot_id = snapshot['SnapshotId']
+ec2.delete_snapshot(SnapshotId=snapshot_id)
+print(f"Deleted unused snapshot: {snapshot_id}")
